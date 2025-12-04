@@ -1,0 +1,28 @@
+name: pinjamtech_app
+description: "PinjamTech Rental Service"
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  firebase_core: ^2.30.0
+  cloud_firestore: ^4.17.1
+  table_calendar: ^3.2.0
+  geolocator: ^10.1.0
+  
+
+flutter:
+  uses-material-design: true
+
+
+  
