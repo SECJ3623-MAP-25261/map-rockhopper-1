@@ -42,3 +42,4 @@ class RoleSwitchBottomSheet extends StatelessWidget {
     );
   }
 }
+

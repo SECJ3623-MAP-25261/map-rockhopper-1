@@ -136,32 +136,24 @@ class _RenteeHomeState extends State<RenteeHome> {
               "My Active Rentals",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            GridView.builder(
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2,
+    crossAxisSpacing: 12,
+    mainAxisSpacing: 12,
+    childAspectRatio: 0.75, // Taller card
+  ),
+  itemCount: dummyDevices.length,
+  itemBuilder: (context, index) {
+    return _buildGridDeviceCard(dummyDevices[index]);
+  },
+),
 
             const SizedBox(height: 15),
 
-            // ACTIVE RENTALS GRID
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1,
-              ),
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.devices, size: 40, color: Colors.grey),
-                  ),
-                );
-              },
-            ),
+        
 
             const SizedBox(height: 30),
             const Text("My Listings (Test Data)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -173,7 +165,7 @@ class _RenteeHomeState extends State<RenteeHome> {
             const SizedBox(height: 15),
 
             // TEST LISTINGS
-            ...dummyDevices.map((device) => _buildDeviceCard(device)).toList(),
+            ...dummyDevices.map((device) => _buildGridDeviceCard(device)).toList(),
 
             const SizedBox(height: 30),
             const Text("Quick Actions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -243,116 +235,111 @@ class _RenteeHomeState extends State<RenteeHome> {
   // ------------------------------
   //       DEVICE CARD FOR TESTING
   // ------------------------------
-  Widget _buildDeviceCard(Device device) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to Edit Listing
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditListing(
-              device: device,
-              bookedSlots: device.bookedSlots,
-            ),
-          ),
-        ).then((updatedDevice) {
-          if (updatedDevice != null && updatedDevice is Device) {
-            // Update the device in the list
-            setState(() {
-              final index = dummyDevices.indexWhere((d) => d.id == device.id);
-              if (index != -1) {
-                dummyDevices[index] = updatedDevice;
-              }
-            });
-          }
-        });
-      },
-      onLongPress: () {
-        // Show delete option
-        showModalBottomSheet(
-          context: context,
-          builder: (context) => _buildDeleteBottomSheet(device),
-        );
-      },
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(device.imageUrl),
-            radius: 30,
-          ),
-          title: Text(
-            device.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('RM ${device.pricePerDay.toStringAsFixed(2)}/day'),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(
-                    Icons.circle,
-                    size: 10,
-                    color: device.isAvailable ? Colors.green : Colors.red,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    device.isAvailable ? 'Available' : 'Not Available',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${device.bookedSlots.length} bookings',
-                    style: const TextStyle(fontSize: 12, color: Colors.blue),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditListing(
-                        device: device,
-                        bookedSlots: device.bookedSlots,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DeleteListing(
-                        device: device,
-                      ),
-                    ),
-                  ).then((shouldDelete) {
-                    if (shouldDelete == true) {
-                      setState(() {
-                        dummyDevices.removeWhere((d) => d.id == device.id);
-                      });
-                    }
-                  });
-                },
-              ),
-            ],
+  Widget _buildGridDeviceCard(Device device) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditListing(
+            device: device,
+            bookedSlots: device.bookedSlots,
           ),
         ),
+      ).then((updatedDevice) {
+        if (updatedDevice != null && updatedDevice is Device) {
+          setState(() {
+            final index = dummyDevices.indexWhere((d) => d.id == device.id);
+            if (index != -1) {
+              dummyDevices[index] = updatedDevice;
+            }
+          });
+        }
+      });
+    },
+    onLongPress: () {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => _buildDeleteBottomSheet(device),
+      );
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-    );
-  }
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // IMAGE
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18)),
+            child: Image.network(
+              device.imageUrl,
+              height: 120,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // NAME
+                Text(
+                  device.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 6),
+
+                // PRICE
+                Text(
+                  "RM ${device.pricePerDay.toStringAsFixed(2)}/day",
+                  style: const TextStyle(
+                      fontSize: 13, color: Colors.green),
+                ),
+                const SizedBox(height: 6),
+
+                // STATUS
+                Row(
+                  children: [
+                    Icon(Icons.circle,
+                        size: 10,
+                        color: device.isAvailable
+                            ? Colors.green
+                            : Colors.red),
+                    const SizedBox(width: 6),
+                    Text(
+                      device.isAvailable
+                          ? "Available"
+                          : "Not Available",
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 
   // ------------------------------
   //       DELETE BOTTOM SHEET

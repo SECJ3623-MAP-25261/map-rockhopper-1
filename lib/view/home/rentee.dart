@@ -2,11 +2,10 @@
 import 'package:flutter/material.dart';
 import '../home/home_roles/role_switch_bottom_sheet.dart';
 import '../home/home_roles/rentee_home.dart';
+import '../home/home_roles/role_navbar.dart';
 import '../profile/rentee_profile.dart';
-import '../home/rentee.dart';   // make sure this file contains class RenterMain
 import '../listings/createlist.dart';
 import '../home/renter.dart';    // important
-
 
 class RenteeMain extends StatefulWidget {
   const RenteeMain({super.key});
@@ -17,48 +16,42 @@ class RenteeMain extends StatefulWidget {
 
 class _RenteeMainState extends State<RenteeMain> {
   int currentIndex = 0;
-
+  
   final pages = const [
     RenteeHome(),
     CreateList(),
     RenteeProfile(),
   ];
 
+  void _switchToRenter() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RenterMain(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: pages[currentIndex],
-
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: CustomBottomNav(
         currentIndex: currentIndex,
         onTap: (i) => setState(() => currentIndex = i),
-        items: [
-          const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-
-          const BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: "Create"),
-
+        currentRole: "rentee",
+        onRoleSwitch: _switchToRenter,
+        items: const [
           BottomNavigationBarItem(
-            icon: GestureDetector(
-              onLongPress: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => RoleSwitchBottomSheet(
-                    currentRole: "rentee",
-                    onSwitchRole: (newRole) {
-                      if (newRole == "renter") {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RenterMain(),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                );
-              },
-              child: const Icon(Icons.person),
-            ),
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle),
+            label: "Create",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
             label: "Profile",
           ),
         ],

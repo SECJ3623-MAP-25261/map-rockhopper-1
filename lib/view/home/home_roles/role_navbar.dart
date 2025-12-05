@@ -1,47 +1,44 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'role_switch_bottom_sheet.dart';
 
-class RoleBottomNavigationBar extends StatelessWidget {
-  final String currentRole;
-  final Map<String, Map<String, dynamic>> roleData;
+class CustomBottomNav extends StatelessWidget {
+  final int currentIndex;
+  final Function(int) onTap;
+  final String currentRole; // "rentee" or "renter"
+  final VoidCallback onRoleSwitch; // callback to switch role
+  final List<BottomNavigationBarItem> items; // Dynamic items
 
-  const RoleBottomNavigationBar({
-    Key? key,
+  const CustomBottomNav({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
     required this.currentRole,
-    required this.roleData,
-  }) : super(key: key);
+    required this.onRoleSwitch,
+    required this.items, // Now required
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Colors.white,
-      selectedItemColor: roleData[currentRole]!['color'],
-      unselectedItemColor: Colors.grey,
-      currentIndex: 0,
-      items: [
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Browse',
-        ),
-        BottomNavigationBarItem( 
-          icon: Badge.count(
-            count: 3,
-            child: const Icon(Icons.notifications),
+    return GestureDetector(
+      onLongPress: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => RoleSwitchBottomSheet(
+            currentRole: currentRole,
+            onSwitchRole: (newRole) {
+              if (newRole != currentRole) {
+                onRoleSwitch();
+              }
+            },
           ),
-          label: 'Notifications',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
-      onTap: (index) {
-        // TODO: Handle navigation
+        );
       },
+      child: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: onTap,
+        items: items,
+        type: BottomNavigationBarType.fixed, // Important for 4+ items
+      ),
     );
   }
 }
-*/
