@@ -161,48 +161,48 @@ class _CreateListState extends State<CreateList> {
   }
 
   void _publishListing() {
-    // Validate required fields
-    if (_itemNameController.text.isEmpty || 
-        _priceController.text.isEmpty || 
-        selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all required fields'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    // Create Device object
-    final newDevice = Device(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: _itemNameController.text,
-      brand: _brandController.text.isNotEmpty ? _brandController.text : 'Generic',
-      pricePerDay: double.tryParse(_priceController.text) ?? 0.0,
-      imageUrl: imagePath ?? 'https://via.placeholder.com/400x300?text=${_itemNameController.text}',
-      isAvailable: isAvailable,
-      maxRentalDays: int.tryParse(selectedMaxDays ?? '30') ?? 30,
-      condition: selectedCondition ?? 'Good',
-      description: _descriptionController.text,
-      category: selectedCategory ?? 'General',
-      bookedSlots: [],
-    );
-
-    // TODO: Save to backend
-    if (_currentPosition != null) {
-      print('Publishing with location: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}');
-    }
-    
+  // Validate required fields
+  if (_itemNameController.text.isEmpty || 
+      _priceController.text.isEmpty || 
+      selectedCategory == null) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Listing published successfully!'),
-        backgroundColor: Colors.green,
+        content: Text('Please fill in all required fields'),
+        backgroundColor: Colors.red,
       ),
     );
-    
-    Navigator.pop(context, newDevice); // Return the created device
+    return;
   }
+
+  // Create Device object with ALL fields
+  final newDevice = Device(
+    id: DateTime.now().millisecondsSinceEpoch.toString(),
+    name: _itemNameController.text,
+    brand: _brandController.text.isNotEmpty ? _brandController.text : 'Generic',
+    pricePerDay: double.tryParse(_priceController.text) ?? 0.0,
+    imageUrl: imagePath ?? 'https://via.placeholder.com/400x300?text=${_itemNameController.text}',
+    isAvailable: isAvailable,
+    maxRentalDays: int.tryParse(selectedMaxDays ?? '30') ?? 30,
+    condition: selectedCondition ?? 'Good',
+    description: _descriptionController.text,
+    category: selectedCategory ?? 'General',
+    bookedSlots: [],
+    deposit: double.tryParse(_depositController.text),
+    specifications: _specificationController.text,
+    location: _locationController.text,
+  );
+
+  // Show success message
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Listing published successfully!'),
+      backgroundColor: Colors.green,
+    ),
+  );
+  
+  // Return the created device
+  Navigator.pop(context, newDevice);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -230,30 +230,55 @@ class _CreateListState extends State<CreateList> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Add Photo Section
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    imagePath = 'https://via.placeholder.com/400x300';
-                  });
-                },
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey[300],
-                  backgroundImage: imagePath != null 
-                      ? NetworkImage(imagePath!) 
-                      : null,
-                  child: imagePath == null
-                      ? const Icon(
-                          Icons.camera_alt, 
-                          size: 40, 
+              // Profile Photo Section
+            Container(
+              width: double.infinity,
+              color: Colors.grey[200],
+              padding: const EdgeInsets.symmetric(vertical: 30),
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey[400],
+                        ),
+                        child: const Icon(
+                          Icons.camera,
+                          size: 50,
                           color: Colors.white,
-                        )
-                      : null,
-                ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _showImagePickerOptions,
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
+            
             const SizedBox(height: 20),
 
             // Item Name
@@ -538,6 +563,93 @@ class _CreateListState extends State<CreateList> {
             const SizedBox(height: 30),
           ],
         ),
+      ),
+    );
+  }
+
+    void _showImagePickerOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Profile Photo',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildImageOption(
+                    icon: Icons.camera_alt,
+                    label: 'Camera',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Add camera logic here
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Camera selected')),
+                      );
+                    },
+                  ),
+                  _buildImageOption(
+                    icon: Icons.photo_library,
+                    label: 'Gallery',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Add gallery logic here
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Gallery selected')),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildImageOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.blue[100],
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Icon(icon, size: 35, color: Colors.blue[700]),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

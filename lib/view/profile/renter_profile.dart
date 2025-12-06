@@ -20,6 +20,7 @@ class _RenterProfileState extends State<RenterProfile> {
       firstName: 'Jaafar',
       lastName: 'Baba',
       username: 'siti',
+      roles: 'renter',
       email: 'jaafar@example.com',
       gender: 'Male',
       phone: '0123456789',

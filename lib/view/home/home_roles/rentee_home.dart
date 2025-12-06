@@ -6,6 +6,7 @@ import '../../listings/edit_listing.dart'; // For testing edit
 import '../../listings/delete_listing.dart'; // For testing delete
 import '../../listings/createlist.dart'; // For testing delete
 import '../search_screen.dart'; // Add this line
+import 'package:pinjamtech_app/view/profile/rentee_profile.dart';
 
 
 class RenteeHome extends StatefulWidget {
@@ -151,21 +152,6 @@ class _RenteeHomeState extends State<RenteeHome> {
   },
 ),
 
-            const SizedBox(height: 15),
-
-        
-
-            const SizedBox(height: 30),
-            const Text("My Listings (Test Data)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Text(
-              "Click to edit, long press for delete option",
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 15),
-
-            // TEST LISTINGS
-            ...dummyDevices.map((device) => _buildGridDeviceCard(device)).toList(),
 
             const SizedBox(height: 30),
             const Text("Quick Actions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -183,7 +169,7 @@ class _RenteeHomeState extends State<RenteeHome> {
                     ),
                   );
                 }),
-                _quickActionCircle(Icons.favorite, "Favorites", () {}),
+                _quickActionCircle(Icons.sell, "My Listing", () {}),
                 _quickActionCircle(Icons.history, "History", () {}),
                 _quickActionCircle(Icons.settings, "Settings", () {}),
               ],
@@ -281,13 +267,21 @@ class _RenteeHomeState extends State<RenteeHome> {
           // IMAGE
           ClipRRect(
             borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18),
-                topRight: Radius.circular(18)),
+              topLeft: Radius.circular(18),
+              topRight: Radius.circular(18),
+            ),
             child: Image.network(
               device.imageUrl,
               height: 120,
               width: double.infinity,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 120,
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.device_unknown, size: 50),
+                );
+              },
             ),
           ),
 
@@ -296,38 +290,84 @@ class _RenteeHomeState extends State<RenteeHome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // NAME
+                // NAME & BRAND
                 Text(
                   device.name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
+                if (device.brand.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    device.brand,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+                
                 const SizedBox(height: 6),
-
+                
                 // PRICE
                 Text(
                   "RM ${device.pricePerDay.toStringAsFixed(2)}/day",
                   style: const TextStyle(
-                      fontSize: 13, color: Colors.green),
+                    fontSize: 13,
+                    color: Colors.green,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
+                
+                // DEPOSIT (if exists)
+                if (device.deposit != null && device.deposit! > 0) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    "Deposit: RM ${device.deposit!.toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.orange[700],
+                    ),
+                  ),
+                ],
+                
                 const SizedBox(height: 6),
-
-                // STATUS
+                
+                // STATUS & CATEGORY
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.circle,
-                        size: 10,
-                        color: device.isAvailable
-                            ? Colors.green
-                            : Colors.red),
-                    const SizedBox(width: 6),
-                    Text(
-                      device.isAvailable
-                          ? "Available"
-                          : "Not Available",
-                      style: const TextStyle(fontSize: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.circle,
+                          size: 10,
+                          color: device.isAvailable ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          device.isAvailable ? "Available" : "Not Available",
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        device.category,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.blue,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -339,7 +379,6 @@ class _RenteeHomeState extends State<RenteeHome> {
     ),
   );
 }
-
 
   // ------------------------------
   //       DELETE BOTTOM SHEET
@@ -466,9 +505,17 @@ class _RenteeHomeState extends State<RenteeHome> {
               ),
               child: const Icon(Icons.chat_bubble_outline, size: 26),
             ),
-          ),
 
-          Container(
+            
+          ),
+        GestureDetector(
+           onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RenteeProfile()),
+              );
+            },
+          child:Container(
             height: 48,
             width: 48,
             decoration: BoxDecoration(
@@ -477,6 +524,7 @@ class _RenteeHomeState extends State<RenteeHome> {
             ),
             child: const Icon(Icons.person, size: 30),
           ),
+        )
         ],
       ),
     );

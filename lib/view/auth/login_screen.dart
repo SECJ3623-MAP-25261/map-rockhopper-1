@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'otp_verification_screen.dart';
+import '../../services/supabase_service.dart';
+//import 'otp_verification_screen.dart';
+import 'otpScreen.dart';
 import 'forgot_password.dart';
-import 'forgot_email.dart';
 //import '../home/home_roles/renter_home.dart';
-import '../home/preferences.dart';
+import '../home/preferencefilter.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -16,7 +17,36 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final auth = AuthService();
 
+  // -----------------------------
+  // LOGIN WITH SUPABASE
+  // -----------------------------
+  void handleLogin() async {
+    try {
+      final res = await auth.signInWithPassword(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      print("Logged in: ${res.user!.id}");
+      _showSnackBar("Login successful!");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>  PreferenceFilteredScreen(),
+        ),
+      );
+    } catch (e) {
+      print("Login error: $e");
+      _showSnackBar(e.toString());
+    }
+  }
+
+  // -----------------------------
+  // MAIN WIDGET BUILD()
+  // -----------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // WELCOME BACK at top center
+              // WELCOME BACK
               const Center(
                 child: Text(
                   'WELCOME BACK',
@@ -48,17 +78,17 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 40),
 
-              // Email or Username Field
+              // Email Label
               const Text(
                 'email or username',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
+
+              // Email Input
               TextFormField(
                 controller: _emailController,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Enter your email or username',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -67,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Continue with code box
+              // Continue with code
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -77,19 +107,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       _showSnackBar('Please enter your email first');
                       return;
                     }
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => OTPVerificationScreen(email: email),
+                        builder: (context) => OtpScreen(),
                       ),
                     );
                   },
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                   child: const Text(
                     'Continue with code',
                     style: TextStyle(
@@ -101,18 +126,18 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Password Field
+              // Password Label
               const Text(
                 'password',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
+
+              // Password Input
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Enter your password',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -121,69 +146,40 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Forgot password & Forgot email (clickable)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      print('Forgot password pressed');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ChangePasswordScreen()
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Forgot password?',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14,
+              // Forgot password
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChangePasswordScreen(),
                       ),
+                    );
+                  },
+                  child: const Text(
+                    'Forgot password?',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 14,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      print('Forgot email pressed');
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ForgotEmailScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Forgot email?',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
               const SizedBox(height: 40),
 
-              // DONE button at bottom right
+              // DONE Button
               Align(
                 alignment: Alignment.centerRight,
                 child: SizedBox(
                   width: 120,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _loginUser();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PreferencesScreen(),
-                        ),
-                      );
-                    },
+                    onPressed: handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
+
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -193,39 +189,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
               ),
             ],
+            
           ),
         ),
       ),
     );
   }
 
-  void _loginUser() {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      _showSnackBar('Please fill in all fields');
-      return;
-    }
-
-    // Simulate login process
-    print('Logging in with: $email');
-    _showSnackBar('Login successful!');
-  }
-
+  // SnackBar helper
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
+      SnackBar(content: Text(message)),
     );
   }
 

@@ -24,6 +24,7 @@ class _RenteeProfileState extends State<RenteeProfile> {
       firstName: 'Jaafar',
       lastName: 'Baba',
       username: 'Jaafar',
+      roles: 'rentee',
       email: 'jaafar@example.com',
       gender: 'Male',
       phone: '0123456789',

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'otp_verification_screen.dart';
+import 'package:pinjamtech_app/view/auth/login_screen.dart';
+import '../../services/supabase_service.dart';
+import 'login_screen.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
+  
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -12,8 +16,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  //final _confirmPasswordController = TextEditingController();
   bool _agreeToTerms = false;
+  final auth = AuthService();
+
+void _showSnackBar(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
+}
+
+void handleSignup() async {
+  try {
+    final res = await auth.signUp(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    print("User created: ${res.user!.id}");
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  } catch (e) {
+    print("Signup error: $e");
+    _showSnackBar(e.toString());
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 20),
 
               // Confirm Password Field
-              const Text(
+              /*const Text(
                 'Confirm Password',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
@@ -116,9 +147,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-              ),
+              ),*/
               const SizedBox(height: 20),
-
+              
               // Terms and Conditions
               Row(
                 children: [
@@ -144,22 +175,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _agreeToTerms ? () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OTPVerificationScreen(
-                          email: _emailController.text,
-                        ),
-                      ),
-                    );
-                  } : null,
-                  style: ElevatedButton.styleFrom(
+                  onPressed: _agreeToTerms ? handleSignup: null,    style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                 
+                  
                   child: const Text(
                     'Sign Up',
                     style: TextStyle(
@@ -173,7 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 20),
 
               // OR Divider
-              Row(
+              /*Row(
                 children: [
                   Expanded(
                     child: Divider(color: Colors.grey[400]),
@@ -190,7 +213,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 20),
 
               // Google Sign In
-              SizedBox(
+             SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: OutlinedButton.icon(
@@ -211,7 +234,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-              ),
+              ),*/
             ],
           ),
         ),
@@ -224,7 +247,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    //_confirmPasswordController.dispose();
     super.dispose();
   }
 }

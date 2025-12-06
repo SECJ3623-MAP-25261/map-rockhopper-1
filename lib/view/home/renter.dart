@@ -50,7 +50,7 @@ class _RenterMainState extends State<RenterMain> {
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle),
+            icon: Icon(Icons.add_shopping_cart),
             label: "Create",
           ),
           BottomNavigationBarItem(

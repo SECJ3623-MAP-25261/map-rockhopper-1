@@ -144,7 +144,7 @@ class _EditProfileState extends State<EditProfile> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        backgroundColor: Colors.teal[700],
+        backgroundColor: Colors.blue[200],
         elevation: 0,
       ),
       body: SingleChildScrollView(

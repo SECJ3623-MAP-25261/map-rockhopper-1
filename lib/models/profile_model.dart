@@ -5,6 +5,7 @@ class ProfileModel {
   final String firstName;
   final String lastName;
   final String username;
+  final String roles;
   final String email;
   final String gender;
   final String phone;
@@ -29,6 +30,7 @@ class ProfileModel {
     required this.firstName,
     required this.lastName,
     required this.username,
+    required this.roles,
     required this.email,
     required this.gender,
     required this.phone,

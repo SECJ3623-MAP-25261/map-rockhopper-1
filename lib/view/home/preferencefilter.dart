@@ -3,9 +3,9 @@ import '../profile/edit_profile.dart';
 import '../home/home_roles/choose_rolescreen.dart';
 
 class PreferenceFilteredScreen extends StatelessWidget {
-  final List<String> selectedItems;
+  
 
-  const PreferenceFilteredScreen({super.key, required this.selectedItems});
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -40,16 +40,7 @@ class PreferenceFilteredScreen extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: selectedItems.map((e) {
-                  return Chip(
-                    label: Text(e),
-                    backgroundColor: Colors.pink.shade100,
-                  );
-                }).toList(),
-              ),
+          
 
               const SizedBox(height: 40),
 
