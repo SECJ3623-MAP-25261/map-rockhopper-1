@@ -11,12 +11,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  supabase_flutter: ^2.10.3
+  flutter_secure_storage: ^8.0.0 
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  firebase_core: ^2.30.0
-  cloud_firestore: ^4.17.1
   table_calendar: ^3.2.0
   geolocator: ^10.1.0
   
