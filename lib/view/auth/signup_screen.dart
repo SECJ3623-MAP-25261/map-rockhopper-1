@@ -31,6 +31,7 @@ void handleSignup() async {
     final res = await auth.signUp(
       _emailController.text,
       _passwordController.text,
+      _fullNameController.text,
     );
 
     print("User created: ${res.user!.id}");

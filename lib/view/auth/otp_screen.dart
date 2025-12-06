@@ -10,6 +10,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final _emailController = TextEditingController();
+  
   final auth = AuthService();
 
   void handleSendOtp() async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'view/home/home_roles/rentee_home.dart';
-import 'view/home/home_roles/renter_home.dart';
+//import 'view/home/home_roles/rentee_home.dart';
+//import 'view/home/home_roles/renter_home.dart';
 import 'view/auth/welcome_screen.dart';
 
 
